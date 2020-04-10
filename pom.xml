@@ -53,6 +53,8 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>executable-tests</finalName>
                             <archive>
                                 <manifest>
                                     <mainClass>net.ttddyy.dsproxy.tests.java6.TestMain
