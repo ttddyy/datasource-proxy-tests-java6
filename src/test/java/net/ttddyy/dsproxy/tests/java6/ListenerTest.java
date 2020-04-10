@@ -96,7 +96,7 @@ public class ListenerTest {
 			}
 
 			@Override
-			public void afterExecuteQueryOnStatement(MethodExecutionContext executionContext) {
+			public void afterExecuteQuery(MethodExecutionContext executionContext) {
 				afterExecuteQueryOnStatement.set(true);
 			}
 		};
