@@ -8,6 +8,7 @@ import net.ttddyy.dsproxy.function.DSProxyBiConsumer;
 import net.ttddyy.dsproxy.function.DSProxyConsumer;
 import net.ttddyy.dsproxy.listener.MethodExecutionContext;
 import net.ttddyy.dsproxy.listener.QueryExecutionContext;
+import net.ttddyy.dsproxy.listener.lifecycle.JdbcLifecycleEventListenerAdapter;
 import net.ttddyy.dsproxy.listener.logging.QueryExecutionContextFormatter;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -39,7 +40,7 @@ public class ListenerTest {
 	}
 
 	@Test
-	public void listeners() throws Exception {
+	public void proxyDataSourceListener() throws Exception {
 		final AtomicBoolean beforeQuery = new AtomicBoolean();
 		final AtomicBoolean afterQuery = new AtomicBoolean();
 		final AtomicBoolean beforeMethod = new AtomicBoolean();
@@ -75,6 +76,39 @@ public class ListenerTest {
 		assertTrue(afterQuery.get());
 		assertTrue(beforeMethod.get());
 		assertTrue(afterMethod.get());
+	}
+
+	@Test
+	public void jdbcLifecycleListener() throws Exception {
+		final AtomicBoolean beforeQuery = new AtomicBoolean();
+		final AtomicBoolean afterMethod = new AtomicBoolean();
+		final AtomicBoolean afterExecuteQueryOnStatement = new AtomicBoolean();
+
+		JdbcLifecycleEventListenerAdapter listener = new JdbcLifecycleEventListenerAdapter() {
+			@Override
+			public void afterMethod(MethodExecutionContext executionContext) {
+				afterMethod.set(true);
+			}
+
+			@Override
+			public void beforeQuery(QueryExecutionContext executionContext) {
+				beforeQuery.set(true);
+			}
+
+			@Override
+			public void afterExecuteQueryOnStatement(MethodExecutionContext executionContext) {
+				afterExecuteQueryOnStatement.set(true);
+			}
+		};
+
+		DataSource proxyDs = ProxyDataSourceBuilder.create(ds).listener(listener).build();
+
+		// perform single query
+		TestDbUtils.countTable(proxyDs, "emp");
+
+		assertTrue(beforeQuery.get());
+		assertTrue(afterMethod.get());
+		assertTrue(afterExecuteQueryOnStatement.get());
 	}
 
 	@Test
