@@ -15,7 +15,7 @@
         <datasource-proxy.version>2.0-SNAPSHOT</datasource-proxy.version>
 
         <!-- Last H2 version that supports Java6 -->
-        <h2.version>1.4.191</h2.version>
+        <h2.version>2.1.210</h2.version>
     </properties>
 
     <repositories>
